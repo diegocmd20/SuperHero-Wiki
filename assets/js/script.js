@@ -7,7 +7,7 @@ $(document).ready(function () {
             alert('Por favor, ingresa un ID de héroe válido.');
             return;
         }
-
+        // Llamada a la API
         $.ajax({
             url: `https://superheroapi.com/api.php/4905856019427443/${nameHero}`,
             type: 'GET',
@@ -16,7 +16,7 @@ $(document).ready(function () {
                 console.log(data);
                 if (data && data.name) {
                     cardLoaded(data);
-
+                    chartLoaded(data);
                 } else {
                     alert('No se encontró información para el héroe con ID ' + nameHero);
                 }
@@ -32,12 +32,6 @@ $(document).ready(function () {
         const heroImage = data.image.url || 'https://via.placeholder.com/150'; // Imagen por defecto
         const heroDescription = data.biography['full-name'] || 'Descripción no disponible';
         const heroPublisher = data.biography['publisher'] || 'Editorial no disponible';
-        const heroIntelligence = data.powerstats.intelligence || 'Desconocido';
-        const heroStrength = data.powerstats.strength || 'Desconocido';
-        const heroSpeed = data.powerstats.speed || 'Desconocido';
-        const heroDurability = data.powerstats.durability || 'Desconocido';
-        const heroPower = data.powerstats.power || 'Desconocido';
-        const heroCombat = data.powerstats.combat || 'Desconocido';
         const heroConnections = data.connections['group-affiliation'] || 'Desconocido';
         const heroWork = data.work.occupation || 'Desconocido';
         const heroFirstAppearance = data.biography['first-appearance'] || 'Aparición no disponible';
@@ -58,12 +52,6 @@ $(document).ready(function () {
                         <h5 class="card-title">Nombre: ${heroName}</h5>
                         <p class="card-text">
                             <strong>Nombre:</strong> ${heroDescription} <br>
-                            <strong>Inteligencia:</strong> ${heroIntelligence} <br>
-                            <strong>Fuerza:</strong> ${heroStrength} <br>
-                            <strong>Velocidad:</strong> ${heroSpeed} <br>
-                            <strong>Durabilidad:</strong> ${heroDurability} <br>
-                            <strong>Poder:</strong> ${heroPower} <br>
-                            <strong>Combate:</strong> ${heroCombat} <br>
                             <strong>Conexiones:</strong> ${heroConnections} <br>
                             <strong>Publicado por:</strong> ${heroPublisher} <br>
                             <strong>Ocupación:</strong> ${heroWork} <br>
@@ -80,6 +68,45 @@ $(document).ready(function () {
 
         // Insertar la card en el DOM
         $('#resultadoHeroe').html(cardHTML); // Asegúrate de tener un contenedor con id 'resultadoHeroe' en tu HTML
+    }
+    // Creación de Gráfico CanvaJS
+    function chartLoaded (data) {
+        const heroName = data.name || 'Nombre no disponible';
+        const heroPower = data.powerstats.power || 'Desconocido';
+        const heroIntelligence = data.powerstats.intelligence || 'Desconocido';
+        const heroStrength = data.powerstats.strength || 'Desconocido';
+        const heroSpeed = data.powerstats.speed || 'Desconocido';
+        const heroDurability = data.powerstats.durability || 'Desconocido';
+        const heroCombat = data.powerstats.combat || 'Desconocido';
+
+        $("#chartContainer").CanvasJSChart({ 
+            title: { 
+                text: `Estadísticas de Poder para ${heroName}`,
+                fontSize: 24
+            }, 
+            axisY: { 
+                title: "Products in %" 
+            }, 
+            legend :{ 
+                verticalAlign: "bottom"
+            }, 
+            data: [ 
+            { 
+                type: "pie", 
+                showInLegend: true, 
+                toolTipContent: "{label} <br/> {y} %", 
+                indexLabel: "{y} %", 
+                dataPoints: [ 
+                    { label: "Poder",  y: heroPower, legendText: "Poder" }, 
+                    { label: "Inteligencia", y: heroIntelligence, legendText: "Inteligencia" }, 
+                    { label: "Fuerza",   y: heroStrength,  legendText: "Fuerza" }, 
+                    { label: "Velocidad",   y: heroSpeed,  legendText: "Velocidad"}, 
+                    { label: "Resistencia",   y: heroDurability,  legendText: "Resistencia" }, 
+                    { label: "Combate",   y: heroCombat, legendText: "Combate" } 
+                ] 
+            } 
+            ] 
+        }); 
     }
 });
 
